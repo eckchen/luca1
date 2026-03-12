@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:static": "powershell -ExecutionPolicy Bypass -File ./export-static.ps1",
+    "export": "powershell -ExecutionPolicy Bypass -File ./export-static.ps1",
     "start": "next start",
     "lint": "next lint"
   },
