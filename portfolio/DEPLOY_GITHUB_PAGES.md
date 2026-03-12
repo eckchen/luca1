@@ -8,13 +8,42 @@ Dieses Projekt ist für **statischen Export** konfiguriert. Die Seite kann auf G
 
 ```powershell
 cd portfolio
+.\deploy-subtree.ps1
+```
+
+Oder manuell:
+
+```powershell
+cd portfolio
+npm install
+npm run build
+npm run export
+cd ..
+
+# CNAME kopieren (für lucarue.vip)
+Copy-Item CNAME portfolio\out\ -Force
+
+# Subtree pushen
+git add -f portfolio/out
+git commit -m "Export: statisches Portfolio"
+git subtree push --prefix portfolio/out origin gh-pages
+git reset --soft HEAD~1
+git reset portfolio/out
+```
+
+---
+
+## Alternative: deploy-github-pages.ps1
+
+```powershell
+cd portfolio
 .\deploy-github-pages.ps1
 ```
 
 Das Script:
 1. Baut den statischen Export (`out/`)
 2. Kopiert CNAME für die Custom Domain
-3. Pusht den Inhalt auf den `gh-pages` Branch
+3. Checkout `gh-pages` und ersetzt den Inhalt
 
 ---
 
