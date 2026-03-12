@@ -54,13 +54,14 @@ export function Contact({ sectionRef }: Props) {
     }
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(`https://formspree.io/f/${formId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name: form.name,
           email: form.email,
           message: form.message,
+          _replyto: form.email,
         }),
       })
 
