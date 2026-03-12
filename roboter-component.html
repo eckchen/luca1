@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roboter – Maus-Tracking</title>
+
+  <!--
+    Spline Viewer Web Component (kein Framework nötig).
+    Das Maus-Tracking der Augen/des Kopfes ist direkt im
+    Spline-Scene eingebaut — keine extra JS-Logik nötig.
+  -->
+  <script
+    type="module"
+    src="https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js"
+  ></script>
+
+  <style>
+    /* ─── Reset ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ─── Roboter-Container ───────────────────────────────────────────
+       Passe width / height nach Bedarf an oder bette ihn in dein
+       Layout ein. Der Roboter skaliert sich automatisch mit.
+    ─────────────────────────────────────────────────────────────────── */
+    .robot-wrapper {
+      width: 500px;
+      height: 500px;
+      position: relative;
+      /* Optional: Hintergrund transparent lassen wenn du ihn
+         auf einer eigenen Seite einbettest */
+      background: transparent;
+    }
+
+    spline-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ─── Demo-Seite (nur zum Testen, kann entfernt werden) ─── */
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ROBOTER-KOMPONENTE
+       Kopiere nur diesen Block (.robot-wrapper + spline-viewer)
+       in deine eigene Seite. Vergiss nicht den <script>-Tag oben
+       ebenfalls zu kopieren.
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="robot-wrapper">
+    <spline-viewer
+      url="https://prod.spline.design/UbM7F-HZcyTbZ4y3/scene.splinecode"
+      loading-anim-type="spinner-small-dark"
+    ></spline-viewer>
+  </div>
+
+</body>
+</html>

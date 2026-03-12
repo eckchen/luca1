@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luca Rüggen</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold:        #f5c26b;
+      --gold-light:  #ffd880;
+      --gold-deep:   #c07a10;
+      --dark:        #07060b;
+      --dark-lit:    #0d0b07;
+    }
+
+    html, body { width: 100%; height: 100%; }
+
+    body {
+      background: var(--dark);
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background 2.2s ease;
+      user-select: none;
+    }
+
+    body.lit { background: var(--dark-lit); }
+
+    /* ── Ambient glow layer ─────────────────────────── */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2.5s ease;
+      background:
+        radial-gradient(ellipse 65% 48% at 50% 16%,
+          rgba(255,185,50,.17) 0%,
+          rgba(255,145,20,.08) 45%,
+          transparent 70%);
+    }
+    body.lit .ambient { opacity: 1; }
+
+    .floor-glow {
+      position: fixed;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 540px;
+      height: 200px;
+      background: radial-gradient(ellipse, rgba(255,185,50,.11) 0%, transparent 68%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2.4s ease .6s;
+    }
+    body.lit .floor-glow { opacity: 1; }
+
+    /* ── Scene wrapper ──────────────────────────────── */
+    .scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── LAMP ───────────────────────────────────────── */
+    .lamp {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ceiling cord */
+    .cord {
+      width: 3px;
+      height: 100px;
+      background: linear-gradient(to bottom, #242424, #464646);
+      border-radius: 2px;
+    }
+
+    /* shade wrapper — needed for light cone positioning */
+    .shade-wrap { position: relative; }
+
+    /* metallic shade (trapezoid) */
+    .shade {
+      width: 154px;
+      height: 74px;
+      background: linear-gradient(160deg,
+        #b8b8bc 0%, #dedee2 28%,
+        #d2d2d6 54%, #a8a8ac 100%);
+      clip-path: polygon(14% 0%, 86% 0%, 100% 100%, 0% 100%);
+      position: relative;
+      overflow: hidden;
+      transition: filter 1.3s ease;
+    }
+
+    /* metallic sheen strip */
+    .shade::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg,
+        transparent 0%, rgba(255,255,255,.32) 44%,
+        rgba(255,255,255,.08) 60%, transparent 100%);
+    }
+
+    /* warm inner glow when lit */
+    .shade-glow {
+      position: absolute;
+      bottom: 0; left: 8%;
+      width: 84%; height: 62%;
+      clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+      background: transparent;
+      transition: background 1.6s ease;
+    }
+
+    body.lit .shade {
+      filter:
+        drop-shadow(0 0 16px rgba(255,188,60,.6))
+        drop-shadow(0 0 55px rgba(255,148,28,.28));
+    }
+    body.lit .shade-glow {
+      background: radial-gradient(ellipse at 50% 100%,
+        rgba(255,215,80,.85) 0%,
+        rgba(255,170,42,.42) 38%,
+        transparent 70%);
+    }
+
+    /* light cone */
+    .cone {
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 148px solid transparent;
+      border-right: 148px solid transparent;
+      border-top: 260px solid rgba(255,190,55,0);
+      transition: border-top-color 1.9s ease .4s;
+      pointer-events: none;
+      z-index: -1;
+    }
+    body.lit .cone { border-top-color: rgba(255,190,55,.045); }
+
+    /* ── PULL CHAIN ─────────────────────────────────── */
+    .pull {
+      position: absolute;
+      right: -54px;
+      top: 148px;           /* cord 100px + ~48px into shade = near bottom */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 30;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .pull-line {
+      width: 2px;
+      height: 58px;
+      background: linear-gradient(to bottom, #757575, #b0b0b0);
+      border-radius: 1px;
+      transform-origin: top center;
+      will-change: transform;
+    }
+
+    .pull-bead {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 36% 33%, #ffe080, #b07010);
+      box-shadow: 0 2px 7px rgba(0,0,0,.75);
+      margin-top: -1px;
+      will-change: transform;
+      transition: box-shadow .25s ease;
+    }
+
+    /* hint label */
+    .pull-hint {
+      position: absolute;
+      top: 50%;
+      left: 22px;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,.2);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .5s ease;
+    }
+    body.lit .pull-hint { opacity: 0; }
+
+    /* ── CONTENT ────────────────────────────────────── */
+    .content-outer {
+      width: 350px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 1.3s cubic-bezier(.16,1,.3,1) .15s;
+    }
+    body.lit .content-outer { max-height: 560px; }
+
+    .content-inner {
+      padding-top: 40px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease .55s, transform 1s cubic-bezier(.16,1,.3,1) .55s;
+    }
+    body.lit .content-inner { opacity: 1; transform: translateY(0); }
+
+    /* ── LOGIN CARD ─────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 22px;
+      padding: 34px 28px 28px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.5);
+    }
+
+    .card-head {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .card-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(245,194,107,.1);
+      border: 1px solid rgba(245,194,107,.22);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 20px;
+    }
+
+    .card-head h2 {
+      color: rgba(255,255,255,.88);
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -.3px;
+    }
+
+    .card-head p {
+      color: rgba(255,255,255,.3);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .f {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 11px;
+      color: rgba(255,255,255,.85);
+      font-size: 13.5px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s, background .25s;
+    }
+    .f::placeholder { color: rgba(255,255,255,.2); }
+    .f:focus {
+      border-color: rgba(245,194,107,.48);
+      background: rgba(255,255,255,.075);
+    }
+
+    .btn-signin {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #f5c26b 0%, #df9215 100%);
+      border: none;
+      border-radius: 11px;
+      color: #1a0e00;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: .1px;
+      cursor: pointer;
+      box-shadow: 0 4px 22px rgba(245,194,107,.24);
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+    }
+    .btn-signin:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+      box-shadow: 0 7px 28px rgba(245,194,107,.34);
+    }
+    .btn-signin:active { transform: translateY(0); }
+
+    .sep {
+      display: flex; align-items: center; gap: 10px;
+      margin: 14px 0;
+    }
+    .sep::before, .sep::after {
+      content: ''; flex: 1;
+      height: 1px; background: rgba(255,255,255,.07);
+    }
+    .sep span { font-size: 11px; color: rgba(255,255,255,.2); letter-spacing: .05em; }
+
+    .card-foot {
+      text-align: center;
+      font-size: 12.5px;
+      color: rgba(255,255,255,.28);
+    }
+    .card-foot a { color: rgba(245,194,107,.65); text-decoration: none; transition: color .2s; }
+    .card-foot a:hover { color: rgba(245,194,107,.92); }
+
+    /* ── BOTTOM HINT ─────────────────────────────────── */
+    .page-hint {
+      position: fixed;
+      bottom: 34px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.17);
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .9s ease;
+    }
+    body.lit .page-hint { opacity: 0; }
+
+    /* ── CURSOR STATES ───────────────────────────────── */
+    .pull:active { cursor: grabbing; }
+  </style>
+</head>
+<body>
+
+  <!-- Background effects -->
+  <div class="ambient"></div>
+  <div class="floor-glow"></div>
+
+  <div class="scene">
+
+    <!-- ═══ LAMP ═══ -->
+    <div class="lamp" id="lamp">
+      <div class="cord"></div>
+
+      <div class="shade-wrap">
+        <div class="shade">
+          <div class="shade-glow"></div>
+        </div>
+        <div class="cone"></div>
+      </div>
+
+      <!-- Pull chain -->
+      <div class="pull" id="pull">
+        <div class="pull-line" id="pLine"></div>
+        <div class="pull-bead" id="pBead"></div>
+        <span class="pull-hint">pull</span>
+      </div>
+    </div>
+
+    <!-- ═══ REVEALED CONTENT ═══ -->
+    <div class="content-outer">
+      <div class="content-inner">
+        <div class="card">
+
+          <div class="card-head">
+            <div class="card-avatar">✦</div>
+            <h2>Welcome back</h2>
+            <p>Sign in to your account</p>
+          </div>
+
+          <div class="fields">
+            <input class="f" type="email"    placeholder="Email address" autocomplete="email" />
+            <input class="f" type="password" placeholder="Password"      autocomplete="current-password" />
+          </div>
+
+          <button class="btn-signin">Sign In</button>
+
+          <div class="sep"><span>or</span></div>
+
+          <div class="card-foot">
+            Don't have an account? <a href="#">Create one</a>
+            &nbsp;&middot;&nbsp;
+            <a href="#">Forgot password?</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /scene -->
+
+  <div class="page-hint">↓ &nbsp; Pull the string to turn on the light &nbsp; ↓</div>
+
+  <script>
+    const pull  = document.getElementById('pull');
+    const pLine = document.getElementById('pLine');
+    const pBead = document.getElementById('pBead');
+
+    const THRESHOLD = 72;
+    let dragging = false;
+    let startY   = 0;
+    let dist     = 0;
+    let lampOn   = false;
+
+    const getY = e => e.touches ? e.touches[0].clientY : e.clientY;
+
+    /* ── Start drag ── */
+    pull.addEventListener('mousedown',  e => startDrag(e));
+    pull.addEventListener('touchstart', e => startDrag(e), { passive: false });
+
+    function startDrag(e) {
+      if (lampOn) return;
+      e.preventDefault();
+      dragging = true;
+      startY   = getY(e);
+    }
+
+    /* ── During drag ── */
+    document.addEventListener('mousemove',  onDrag);
+    document.addEventListener('touchmove',  onDrag, { passive: false });
+
+    function onDrag(e) {
+      if (!dragging || lampOn) return;
+      e.preventDefault();
+
+      const raw = Math.max(0, getY(e) - startY);
+      dist = Math.min(raw, 130);
+
+      // slight spring resistance
+      const d = dist * 0.70;
+
+      pLine.style.transform = `scaleY(${1 + d / 54})`;
+      pBead.style.transform = `translateY(${d}px)`;
+
+      // glow bead as threshold approaches
+      if (dist > THRESHOLD * 0.55) {
+        const ratio = Math.min((dist - THRESHOLD * 0.55) / (THRESHOLD * 0.45), 1);
+        pBead.style.boxShadow =
+          `0 2px 7px rgba(0,0,0,.75), 0 0 ${ratio * 20}px rgba(245,194,107,${ratio * 0.95})`;
+      }
+    }
+
+    /* ── End drag ── */
+    document.addEventListener('mouseup',  endDrag);
+    document.addEventListener('touchend', endDrag);
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+
+      if (dist >= THRESHOLD && !lampOn) {
+        activateLamp();
+      } else {
+        snapBack(true);
+      }
+      dist = 0;
+    }
+
+    /* ── Snap string back ── */
+    function snapBack(resetGlow = false) {
+      const spring = '.46s cubic-bezier(.34,1.56,.64,1)';
+      pLine.style.transition = `transform ${spring}`;
+      pBead.style.transition = `transform ${spring}, box-shadow .3s ease`;
+      pLine.style.transform  = 'scaleY(1)';
+      pBead.style.transform  = 'translateY(0)';
+      if (resetGlow) pBead.style.boxShadow = '0 2px 7px rgba(0,0,0,.75)';
+
+      setTimeout(() => {
+        pLine.style.transition = '';
+        pBead.style.transition = 'box-shadow .25s ease';
+      }, 500);
+    }
+
+    /* ── Turn lamp on ── */
+    function activateLamp() {
+      lampOn = true;
+      snapBack();   // spring back first
+
+      setTimeout(() => {
+        document.body.classList.add('lit');
+        pull.style.pointerEvents = 'none';
+        pull.style.cursor = 'default';
+      }, 160);
+    }
+  </script>
+</body>
+</html>
