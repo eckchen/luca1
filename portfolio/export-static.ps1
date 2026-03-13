@@ -12,8 +12,13 @@ if (Test-Path $middleware) {
 
 try {
   $env:EXPORT_STATIC = "1"
-  npm run build
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  Push-Location $root
+  try {
+    npm run build
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  } finally {
+    Pop-Location
+  }
   Write-Host ""
   Write-Host "Statische Dateien in: $root\out"
 } finally {
