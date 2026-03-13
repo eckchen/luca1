@@ -1,7 +1,12 @@
-# Änderungen live schalten (Vercel)
+# Deploy (lucarue.vip = GitHub Pages)
 
-Damit alle das neue Design sehen, musst du die Änderungen zu GitHub pushen.  
-Vercel baut und veröffentlicht automatisch bei jedem Push.
+**Hinweis:** Deine Seite lucarue.vip läuft über **GitHub Pages**, nicht Vercel. Siehe **DEPLOY_ANLEITUNG.md** für die korrekte Anleitung.
+
+---
+
+# Falls du Vercel nutzt
+
+Damit alle das neue Design sehen, musst du die Änderungen zu GitHub pushen.
 
 ---
 
