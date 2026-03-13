@@ -4,6 +4,25 @@ Dieses Projekt ist für **statischen Export** konfiguriert. Die Seite kann auf G
 
 ---
 
+## Änderungen für andere sichtbar machen
+
+Nach jeder Änderung (z.B. neuer Glow-Effekt, Texte, Links):
+
+```powershell
+cd portfolio
+npm run sync
+```
+
+Das aktualisiert:
+- `portfolio/out/` (statischer Export)
+- `index.html` und `_next/` im Hauptordner (luca1)
+
+**Für GitHub Pages (lucarue.vip):** Danach noch deployen (siehe unten).
+
+**Für lokale Ansicht:** `npx serve .` im Hauptordner oder `npm run dev` im portfolio-Ordner.
+
+---
+
 ## Schnellstart
 
 ```powershell
