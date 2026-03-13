@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, useState } from "react"
 
 /**
  * Star configuration – each star has unique properties for natural variation.
@@ -18,13 +18,10 @@ interface Star {
 }
 
 const STAR_COUNT_DESKTOP = 350
-const STAR_COUNT_MOBILE = 80
 const BASE_HUE = 220
 const MAX_SIZE = 3
 const MAX_DRIFT = 0.06
 const TWINKLE_AMOUNT = 0.3
-const MOBILE_FPS = 30
-const MOBILE_FRAME_INTERVAL = 1000 / MOBILE_FPS
 
 function isMobileDevice(): boolean {
   if (typeof window === "undefined") return false
@@ -49,23 +46,31 @@ function createStar(width: number, height: number): Star {
 }
 
 export function StarBackground() {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animationRef = useRef<number | undefined>(undefined)
   const timeRef = useRef(0)
   const sizeRef = useRef({ w: 0, h: 0 })
-  const lastFrameRef = useRef(0)
-  const mobileRef = useRef(false)
 
-  const initStars = useCallback((width: number, height: number, mobile: boolean) => {
-    const count = mobile ? STAR_COUNT_MOBILE : STAR_COUNT_DESKTOP
+  const initStars = useCallback((width: number, height: number) => {
     starsRef.current = Array.from(
-      { length: count },
+      { length: STAR_COUNT_DESKTOP },
       () => createStar(width, height),
     )
   }, [])
 
   useEffect(() => {
+    if (isMobileDevice()) {
+      setIsMobile(true)
+      return
+    }
+    setIsMobile(false)
+  }, [])
+
+  useEffect(() => {
+    if (isMobile !== false) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -73,10 +78,7 @@ export function StarBackground() {
     if (!ctx) return
 
     const resize = () => {
-      const mobile = isMobileDevice()
-      mobileRef.current = mobile
-      // Auf Mobile: DPR auf 1 begrenzen für bessere Performance
-      const dpr = mobile ? 1 : Math.min(window.devicePixelRatio ?? 1, 2)
+      const dpr = Math.min(window.devicePixelRatio ?? 1, 2)
       const w = window.innerWidth
       const h = window.innerHeight
 
@@ -87,24 +89,12 @@ export function StarBackground() {
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.scale(dpr, dpr)
       sizeRef.current = { w, h }
-      initStars(w, h, mobile)
+      initStars(w, h)
     }
 
-    const animate = (timestamp: number) => {
-      const { w, h } = sizeRef.current
-      const mobile = mobileRef.current
-
-      // Frame-Throttling auf Mobile für flüssigere Animation
-      if (mobile && w > 0 && h > 0) {
-        const elapsed = timestamp - lastFrameRef.current
-        if (elapsed < MOBILE_FRAME_INTERVAL) {
-          animationRef.current = requestAnimationFrame(animate)
-          return
-        }
-        lastFrameRef.current = timestamp
-      }
-
+    const animate = () => {
       timeRef.current += 1
+      const { w, h } = sizeRef.current
       if (w === 0 || h === 0) {
         animationRef.current = requestAnimationFrame(animate)
         return
@@ -128,19 +118,15 @@ export function StarBackground() {
         ctx.beginPath()
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
 
-        if (mobileRef.current) {
-          // Mobile: Einfacher Kreis statt Gradient – deutlich performanter
-          ctx.fillStyle = `hsla(${star.hue}, 25%, 98%, ${alpha})`
-        } else {
-          const gradient = ctx.createRadialGradient(
-            star.x, star.y, 0,
-            star.x, star.y, star.size * 2,
-          )
-          gradient.addColorStop(0, `hsla(${star.hue}, 30%, 100%, ${alpha})`)
-          gradient.addColorStop(0.5, `hsla(${star.hue}, 20%, 95%, ${alpha * 0.6})`)
-          gradient.addColorStop(1, "transparent")
-          ctx.fillStyle = gradient
-        }
+        const gradient = ctx.createRadialGradient(
+          star.x, star.y, 0,
+          star.x, star.y, star.size * 2,
+        )
+        gradient.addColorStop(0, `hsla(${star.hue}, 30%, 100%, ${alpha})`)
+        gradient.addColorStop(0.5, `hsla(${star.hue}, 20%, 95%, ${alpha * 0.6})`)
+        gradient.addColorStop(1, "transparent")
+
+        ctx.fillStyle = gradient
         ctx.fill()
       })
 
@@ -155,7 +141,9 @@ export function StarBackground() {
       window.removeEventListener("resize", resize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
-  }, [initStars])
+  }, [initStars, isMobile])
+
+  if (isMobile) return null
 
   return (
     <canvas
