@@ -1,5 +1,6 @@
 # Portfolio zu GitHub Pages deployen
 # Triggers: Push auf main ODER manuell
+# Aktualisiert BEIDE: gh-pages Branch UND GitHub Actions Deploy
 
 name: Deploy Portfolio (lucarue.vip)
 
@@ -9,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -65,10 +66,21 @@ jobs:
             echo "CNAME kopiert"
           fi
 
-      - name: Upload to GitHub Pages
+      - name: Upload to GitHub Pages (GitHub Actions Source)
         uses: actions/upload-pages-artifact@v3
         with:
           path: portfolio/out
+
+      - name: Push zu gh-pages Branch (für Branch-Source)
+        run: |
+          cd portfolio/out
+          git init
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Deploy: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git branch -M gh-pages
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages:
 
   pages:
     runs-on: ubuntu-latest
