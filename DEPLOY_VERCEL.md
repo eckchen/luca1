@@ -21,7 +21,7 @@ Vercel baut und veröffentlicht automatisch bei jedem Push.
 1. **GitHub Desktop** öffnen
 2. Repo öffnen: `C:\Users\luca0\Desktop\luca1`
 3. Alle Änderungen sollten links angezeigt werden
-4. **Commit message:** z.B. `Update: neues Design, Tagline, guns.lol Link`
+4. **Commit message:** z.B. `Update: Automaten-App, App Store & Google Play Badges, Snackautomat`
 5. **Commit to main** klicken
 6. **Push origin** klicken
 
@@ -30,7 +30,7 @@ Vercel baut und veröffentlicht automatisch bei jedem Push.
 ```powershell
 cd C:\Users\luca0\Desktop\luca1
 git add .
-git commit -m "Update: neues Design, Tagline, guns.lol Link"
+git commit -m "Update: Automaten-App, App Store & Google Play Badges, Snackautomat"
 git push origin main
 ```
 

@@ -45,7 +45,7 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative z-10">
 
       <Navbar activeSection={activeSection} />
 

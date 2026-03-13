@@ -1,7 +1,6 @@
 "use client"
 
 import { ArrowRight, ChevronDown } from "lucide-react"
-import { RobotScene } from "@/components/robot-scene"
 import { HeroName } from "@/components/hero-name"
 import { useLanguage } from "@/components/language-provider"
 
@@ -20,9 +19,7 @@ export function Hero({ sectionRef }: Props) {
       ref={sectionRef}
       className="relative min-h-screen flex items-center pt-16"
     >
-      <div className="w-full grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-
-        {/* ── Linke Spalte: Text & CTAs ── */}
+      <div className="w-full max-w-2xl">
         <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
             <div className="text-xs font-mono tracking-[0.22em] text-muted-foreground uppercase">
@@ -91,11 +88,6 @@ export function Hero({ sectionRef }: Props) {
               </span>
             ))}
           </div>
-        </div>
-
-        {/* ── Rechte Spalte: 3D Roboter ── */}
-        <div className="hidden lg:block relative h-[520px] w-full">
-          <RobotScene />
         </div>
       </div>
 
