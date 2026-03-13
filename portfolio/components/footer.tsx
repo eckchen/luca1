@@ -17,7 +17,7 @@ export function Footer() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="space-y-1.5">
           <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Luca Rüggen. {t.footer.rights}
+            © {new Date().getFullYear()} Luca. {t.footer.rights}
           </div>
           <div className="text-xs text-muted-foreground/50 font-mono">
             {t.footer.built}
@@ -26,7 +26,7 @@ export function Footer() {
 
         <div className="flex items-center gap-3">
           <span className="text-xs font-mono text-muted-foreground/40 hidden sm:block mr-2">
-            Luca Rüggen
+            Luca
           </span>
           {mounted && (
             <button

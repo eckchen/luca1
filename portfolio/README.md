@@ -1,4 +1,4 @@
-# Portfolio — Luca Rüggen
+# Portfolio — Luca
 
 Persönliche Portfolio-Website mit **Next.js 15**, **Tailwind CSS v4** und **TypeScript**.
 

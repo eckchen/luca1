@@ -6,8 +6,8 @@ import { LanguageProvider } from "@/components/language-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Portfolio — Luca Rüggen",
-  description: "Full Stack Developer | Leidenschaft für modernes Web-Design und sauberen Code.",
+  title: "Portfolio — Luca",
+  description: "Programmierung & Design | Software entwickeln — Web, Desktop, APIs — und passendes UI gestalten.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
