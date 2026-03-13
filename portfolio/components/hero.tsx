@@ -28,15 +28,19 @@ export function Hero({ sectionRef }: Props) {
             <div className="text-xs font-mono tracking-[0.22em] text-muted-foreground uppercase">
               {t.hero.subtitle}
             </div>
-            <HeroName />
-            <a
-              href="https://guns.lol/ecke"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[11px] sm:text-xs font-mono tracking-wider text-violet-300 transition-all duration-300 [text-shadow:0_0_16px_rgba(192,132,252,0.9),0_0_32px_rgba(167,139,250,0.6)] hover:[text-shadow:0_0_20px_rgba(192,132,252,1),0_0_40px_rgba(167,139,250,0.8)]"
-            >
-              guns.lol/ecke
-            </a>
+            <div className="flex flex-col gap-1">
+              <span className="inline-block w-fit cursor-default transition-all duration-500 ease-out hover:scale-105 hover:tracking-wide hover:drop-shadow-[0_0_20px_rgba(192,132,252,0.4)]">
+                <HeroName />
+              </span>
+              <a
+                href="https://guns.lol/ecke"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-fit text-[11px] sm:text-xs font-mono tracking-wider text-violet-300 transition-all duration-300 [text-shadow:0_0_16px_rgba(192,132,252,0.9),0_0_32px_rgba(167,139,250,0.6)] hover:[text-shadow:0_0_20px_rgba(192,132,252,1),0_0_40px_rgba(167,139,250,0.8)]"
+              >
+                guns.lol/ecke
+              </a>
+            </div>
           </div>
 
           <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-md">
