@@ -4,11 +4,11 @@
 /* ─── Light Mode Tokens ─── */
 :root {
   --background: oklch(0.99 0 0);
-  --foreground: oklch(0.09 0 0);
+  --foreground: oklch(0.07 0 0);
   --card: oklch(0.97 0 0);
-  --card-foreground: oklch(0.09 0 0);
+  --card-foreground: oklch(0.07 0 0);
   --muted: oklch(0.935 0 0);
-  --muted-foreground: oklch(0.42 0 0);
+  --muted-foreground: oklch(0.50 0 0);
   --border: oklch(0.82 0 0);
   --input: oklch(0.88 0 0);
   --ring: oklch(0.55 0 0);
@@ -22,11 +22,11 @@
 /* ─── Dark Mode Tokens ─── */
 .dark {
   --background: oklch(0.105 0 0);
-  --foreground: oklch(0.965 0 0);
+  --foreground: oklch(0.98 0 0);
   --card: oklch(0.135 0 0);
-  --card-foreground: oklch(0.965 0 0);
+  --card-foreground: oklch(0.98 0 0);
   --muted: oklch(0.195 0 0);
-  --muted-foreground: oklch(0.64 0 0);
+  --muted-foreground: oklch(0.72 0 0);
   --border: oklch(0.225 0 0);
   --input: oklch(0.225 0 0);
   --ring: oklch(0.42 0 0);
@@ -40,6 +40,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "Cascadia Code", monospace;
+  --font-weight-light: 400;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -75,6 +76,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-weight: 450;
     overflow-x: hidden;
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
