@@ -1,7 +1,6 @@
 "use client"
 
 import { ArrowRight, ChevronDown } from "lucide-react"
-import { RobotScene } from "@/components/robot-scene"
 import { HeroName } from "@/components/hero-name"
 import { useLanguage } from "@/components/language-provider"
 
@@ -97,9 +96,11 @@ export function Hero({ sectionRef }: Props) {
           </div>
         </div>
 
-        {/* ── Rechte Spalte: 3D Roboter ── */}
-        <div className="hidden lg:block relative h-[520px] w-full">
-          <RobotScene />
+        {/* ── Rechte Spalte: Platzhalter (Spline temporär deaktiviert) ── */}
+        <div className="hidden lg:flex relative h-[520px] w-full items-center justify-center">
+          <div className="w-full h-full max-w-md rounded-2xl bg-gradient-to-br from-muted/40 via-muted/20 to-transparent border border-border/50 flex items-center justify-center">
+            <span className="text-4xl font-light text-muted-foreground/40 tracking-[0.3em]">DEV</span>
+          </div>
         </div>
       </div>
 
