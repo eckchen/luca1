@@ -133,7 +133,7 @@ export function Navbar({ activeSection }: Props) {
         {/* Logo */}
         <button
           onClick={() => scrollTo("#hero")}
-          className="font-mono text-xs sm:text-sm tracking-[0.12em] sm:tracking-[0.18em] text-foreground hover:text-muted-foreground transition-colors duration-300 shrink-0 min-h-[44px] flex items-center"
+          className="font-logo text-xs sm:text-sm tracking-[0.12em] sm:tracking-[0.18em] text-foreground hover:text-muted-foreground transition-colors duration-300 shrink-0 min-h-[44px] flex items-center"
         >
           <span className="glow-p-subtle inline-block scale-110 origin-left">P</span>ORTFOLIO
         </button>
