@@ -27,7 +27,7 @@ export function About({ sectionRef }: Props) {
       <div className="space-y-16">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <h2 className="glow-purple text-2xl sm:text-4xl font-light min-w-0">{t.about.title}</h2>
+          <h2 className="text-2xl sm:text-4xl font-light min-w-0">{t.about.title}</h2>
           <span className="text-sm font-mono text-muted-foreground shrink-0">01</span>
         </div>
 

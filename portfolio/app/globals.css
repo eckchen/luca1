@@ -76,7 +76,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-weight: 450;
+    font-weight: 400;
     overflow-x: hidden;
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
@@ -145,67 +145,17 @@
     50%       { opacity: 0.4; }
   }
 
-  /* Lila leuchtender Link – Neon-Glow mit sanfter Puls-Animation */
-  .glow-purple {
-    color: #e9d5ff;
+  /* Dezenter Glow für das P bei PORTFOLIO */
+  .glow-p-subtle {
     text-shadow:
-      0 0 4px rgba(192, 132, 252, 0.9),
-      0 0 12px rgba(168, 85, 247, 0.8),
-      0 0 24px rgba(139, 92, 246, 0.6),
-      0 0 36px rgba(124, 58, 237, 0.4);
-    animation: glow-pulse 3s ease-in-out infinite;
+      0 0 6px rgba(255, 255, 255, 0.4),
+      0 0 12px rgba(255, 255, 255, 0.2);
   }
 
-  .glow-purple:hover {
-    color: #f5f3ff;
+  .dark .glow-p-subtle {
     text-shadow:
-      0 0 8px rgba(216, 180, 254, 1),
-      0 0 20px rgba(192, 132, 252, 0.9),
-      0 0 40px rgba(168, 85, 247, 0.7),
-      0 0 56px rgba(139, 92, 246, 0.5);
-    animation: none;
-  }
-
-  @keyframes glow-pulse {
-    0%, 100% {
-      text-shadow:
-        0 0 4px rgba(192, 132, 252, 0.9),
-        0 0 12px rgba(168, 85, 247, 0.8),
-        0 0 24px rgba(139, 92, 246, 0.6),
-        0 0 36px rgba(124, 58, 237, 0.4);
-    }
-    50% {
-      text-shadow:
-        0 0 8px rgba(216, 180, 254, 1),
-        0 0 20px rgba(192, 132, 252, 0.9),
-        0 0 36px rgba(168, 85, 247, 0.7),
-        0 0 48px rgba(139, 92, 246, 0.5);
-    }
-  }
-
-  /* Glow für den Namen „Luca“ */
-  .glow-name {
-    color: #f8fafc;
-    text-shadow:
-      0 0 20px rgba(248, 250, 252, 0.6),
-      0 0 40px rgba(148, 163, 184, 0.4),
-      0 0 60px rgba(100, 116, 139, 0.3);
-    animation: glow-name-pulse 4s ease-in-out infinite;
-  }
-
-  @keyframes glow-name-pulse {
-    0%, 100% {
-      text-shadow:
-        0 0 20px rgba(248, 250, 252, 0.6),
-        0 0 40px rgba(148, 163, 184, 0.4),
-        0 0 60px rgba(100, 116, 139, 0.3);
-    }
-    50% {
-      text-shadow:
-        0 0 30px rgba(248, 250, 252, 0.8),
-        0 0 60px rgba(148, 163, 184, 0.5),
-        0 0 90px rgba(100, 116, 139, 0.4);
-    }
+      0 0 6px rgba(255, 255, 255, 0.35),
+      0 0 14px rgba(255, 255, 255, 0.15);
   }
 
 }

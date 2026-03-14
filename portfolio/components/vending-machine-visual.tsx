@@ -1,6 +1,10 @@
 "use client"
 
 export function VendingMachineVisual() {
+  /* Pfad entlang der weißen Außenlinie (rect 8,20 84x94 rx=6) */
+  const outlinePath =
+    "M 14,20 L 86,20 Q 92,20 92,26 L 92,106 Q 92,112 86,112 L 14,112 Q 8,112 8,106 L 8,26 Q 8,20 14,20"
+
   const CODES = [
     ["A1", "A2", "A3"],
     ["B1", "B2", "B3"],
@@ -23,6 +27,21 @@ export function VendingMachineVisual() {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <filter id="glow-light-streak" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="1.2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <linearGradient id="light-streak-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+            <stop offset="25%" stopColor="rgba(255,255,255,0.7)" />
+            <stop offset="50%" stopColor="rgba(255,255,255,1)" />
+            <stop offset="75%" stopColor="rgba(255,255,255,0.7)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          </linearGradient>
         </defs>
         {/* Schatten / Tiefe */}
         <rect
@@ -56,6 +75,12 @@ export function VendingMachineVisual() {
           strokeWidth="0.8"
           filter="url(#glow-white)"
         />
+        {/* Lichtreflex – professioneller Streak entlang der Linie */}
+        <g filter="url(#glow-light-streak)">
+          <ellipse rx="6" ry="1" fill="url(#light-streak-gradient)">
+            <animateMotion dur="8s" repeatCount="indefinite" path={outlinePath} rotate="auto" />
+          </ellipse>
+        </g>
         {/* Münzeinwurf */}
         <rect
           x="36"

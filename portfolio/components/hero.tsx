@@ -30,7 +30,7 @@ export function Hero({ sectionRef }: Props) {
               href="https://guns.lol/ecke"
               target="_blank"
               rel="noopener noreferrer"
-              className="glow-purple inline-block text-xs font-mono text-violet-400 hover:text-violet-300 transition-all duration-300"
+              className="inline-block text-xs font-mono text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               guns.lol/ecke
             </a>
