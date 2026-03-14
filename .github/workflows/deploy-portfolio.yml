@@ -1,6 +1,6 @@
-# Portfolio zu GitHub Pages deployen
+# Portfolio zu GitHub Pages deployen (Branch-Source)
 # Triggers: Push auf main ODER manuell
-# Aktualisiert BEIDE: gh-pages Branch UND GitHub Actions Deploy
+# Nutzt gh-pages Branch – Pages Source MUSS "Deploy from a branch" sein!
 
 name: Deploy Portfolio (lucarue.vip)
 
@@ -11,8 +11,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: "portfolio-pages"
@@ -66,12 +64,10 @@ jobs:
             echo "CNAME kopiert"
           fi
 
-      - name: Upload to GitHub Pages (GitHub Actions Source)
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: portfolio/out
+      - name: .nojekyll (für Next.js)
+        run: touch portfolio/out/.nojekyll
 
-      - name: Push zu gh-pages Branch (für Branch-Source)
+      - name: Push zu gh-pages Branch
         run: |
           cd portfolio/out
           git init
@@ -81,14 +77,3 @@ jobs:
           git commit -m "Deploy: $(date -u +'%Y-%m-%d %H:%M UTC')"
           git branch -M gh-pages
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages:gh-pages
-
-  pages:
-    runs-on: ubuntu-latest
-    needs: deploy
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
