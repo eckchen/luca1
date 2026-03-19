@@ -3,37 +3,41 @@
 
 /* ─── Light Mode Tokens ─── */
 :root {
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.07 0 0);
-  --card: oklch(0.97 0 0);
-  --card-foreground: oklch(0.07 0 0);
-  --muted: oklch(0.935 0 0);
-  --muted-foreground: oklch(0.50 0 0);
-  --border: oklch(0.82 0 0);
-  --input: oklch(0.88 0 0);
-  --ring: oklch(0.55 0 0);
-  --primary: oklch(0.09 0 0);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.935 0 0);
-  --secondary-foreground: oklch(0.15 0 0);
-  --radius: 0.5rem;
+  --background: oklch(0.99 0.005 264);
+  --foreground: oklch(0.07 0.02 264);
+  --card: oklch(0.975 0.008 264);
+  --card-foreground: oklch(0.07 0.02 264);
+  --muted: oklch(0.93 0.012 264);
+  --muted-foreground: oklch(0.48 0.03 264);
+  --border: oklch(0.86 0.02 264);
+  --input: oklch(0.88 0.015 264);
+  --ring: oklch(0.52 0.08 264);
+  --primary: oklch(0.09 0.02 264);
+  --primary-foreground: oklch(0.99 0.005 264);
+  --secondary: oklch(0.935 0.012 264);
+  --secondary-foreground: oklch(0.15 0.02 264);
+  --accent: oklch(0.42 0.14 264);
+  --accent-foreground: oklch(0.99 0.01 264);
+  --radius: 0.625rem;
 }
 
 /* ─── Dark Mode Tokens ─── */
 .dark {
-  --background: oklch(0.105 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.135 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.195 0 0);
-  --muted-foreground: oklch(0.72 0 0);
-  --border: oklch(0.225 0 0);
-  --input: oklch(0.225 0 0);
-  --ring: oklch(0.42 0 0);
-  --primary: oklch(0.965 0 0);
-  --primary-foreground: oklch(0.105 0 0);
-  --secondary: oklch(0.195 0 0);
-  --secondary-foreground: oklch(0.965 0 0);
+  --background: oklch(0.11 0.018 264);
+  --foreground: oklch(0.97 0.008 264);
+  --card: oklch(0.145 0.022 264);
+  --card-foreground: oklch(0.97 0.008 264);
+  --muted: oklch(0.2 0.025 264);
+  --muted-foreground: oklch(0.68 0.04 264);
+  --border: oklch(0.24 0.03 264);
+  --input: oklch(0.24 0.03 264);
+  --ring: oklch(0.55 0.1 264);
+  --primary: oklch(0.965 0.01 264);
+  --primary-foreground: oklch(0.11 0.02 264);
+  --secondary: oklch(0.2 0.025 264);
+  --secondary-foreground: oklch(0.965 0.01 264);
+  --accent: oklch(0.72 0.11 264);
+  --accent-foreground: oklch(0.12 0.04 264);
 }
 
 /* ─── Tailwind v4 Theme Registration ─── */
@@ -56,6 +60,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
@@ -83,7 +89,7 @@
   }
 
   ::selection {
-    background-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+    background-color: color-mix(in oklch, var(--accent) 28%, transparent);
   }
 
   ::-webkit-scrollbar {
@@ -157,6 +163,33 @@
     text-shadow:
       0 0 6px rgba(255, 255, 255, 0.35),
       0 0 14px rgba(255, 255, 255, 0.15);
+  }
+
+  /* Sektionsüberschriften — Syne + dezente Akzentlinie */
+  .section-heading {
+    @apply font-logo text-2xl sm:text-4xl font-medium tracking-tight text-foreground;
+  }
+
+  .section-index {
+    @apply text-xs font-mono tabular-nums text-muted-foreground/70;
+  }
+
+  /* Weiche Karten-/Panel-Fläche */
+  .surface-panel {
+    @apply rounded-2xl border border-border/80 bg-card/40 backdrop-blur-sm;
+  }
+
+  /* Primär-CTA: leichte Tiefe */
+  .btn-primary-solid {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 min-h-[48px] rounded-xl text-sm font-medium;
+    @apply bg-foreground text-background shadow-md shadow-foreground/10;
+    @apply hover:opacity-90 active:scale-[0.98] transition-all duration-300;
+  }
+
+  .btn-secondary-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 min-h-[48px] rounded-xl text-sm;
+    @apply border border-border/90 bg-muted/20 text-foreground backdrop-blur-sm;
+    @apply hover:border-accent/40 hover:bg-muted/35 active:scale-[0.98] transition-all duration-300;
   }
 
 }

@@ -17,12 +17,21 @@ export function Hero({ sectionRef }: Props) {
     <section
       id="hero"
       ref={sectionRef}
-      className="relative min-h-screen flex items-center pt-16"
+      className="relative min-h-screen flex items-center pt-36 sm:pt-40 overflow-hidden"
     >
-      <div className="w-full max-w-2xl">
+      <div
+        className="pointer-events-none absolute -left-1/4 top-1/3 h-[min(420px,50vh)] w-[min(420px,90vw)] rounded-full opacity-40 dark:opacity-25 blur-[100px]"
+        style={{
+          background:
+            "radial-gradient(circle at center, color-mix(in oklch, var(--accent) 35%, transparent) 0%, transparent 70%)",
+        }}
+        aria-hidden
+      />
+      <div className="w-full max-w-2xl relative">
         <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
-            <div className="text-xs font-mono tracking-[0.22em] text-muted-foreground uppercase">
+            <div className="inline-flex items-center gap-3 text-xs font-mono tracking-[0.22em] text-muted-foreground uppercase">
+              <span className="h-px w-8 bg-accent/60 shrink-0" aria-hidden />
               {t.hero.subtitle}
             </div>
             <HeroName />
@@ -30,7 +39,7 @@ export function Hero({ sectionRef }: Props) {
               href="https://guns.lol/ecke"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-xs font-mono text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="inline-block text-xs font-mono text-muted-foreground hover:text-accent transition-colors duration-300"
             >
               guns.lol/ecke
             </a>
@@ -49,7 +58,7 @@ export function Hero({ sectionRef }: Props) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping motion-reduce:animate-none motion-reduce:opacity-0" />
                 <span className="relative inline-flex size-2 rounded-full bg-green-500" />
               </span>
               {t.hero.available}
@@ -59,20 +68,14 @@ export function Hero({ sectionRef }: Props) {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <a
-              href="#projects"
-              className="group inline-flex items-center justify-center gap-2 px-6 py-3 min-h-[48px] bg-foreground text-background text-sm font-medium rounded-lg hover:opacity-80 active:scale-[0.98] transition-all duration-300"
-            >
+            <a href="#projects" className="group btn-primary-solid">
               {t.hero.viewProjects}
               <ArrowRight
                 size={15}
                 className="transform group-hover:translate-x-0.5 transition-transform duration-300"
               />
             </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center px-6 py-3 min-h-[48px] border border-border text-foreground text-sm rounded-lg hover:border-muted-foreground/60 hover:bg-muted/30 active:scale-[0.98] transition-all duration-300"
-            >
+            <a href="#contact" className="btn-secondary-outline">
               {t.hero.contactCta}
             </a>
           </div>
@@ -82,7 +85,7 @@ export function Hero({ sectionRef }: Props) {
             {TECH_STACK.map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-xs border border-border rounded-full text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all duration-300 cursor-default"
+                className="px-3 py-1.5 text-xs rounded-full border border-border/70 bg-muted/25 text-muted-foreground hover:border-accent/30 hover:text-foreground transition-all duration-300 cursor-default"
               >
                 {tech}
               </span>
@@ -94,7 +97,7 @@ export function Hero({ sectionRef }: Props) {
       {/* Scroll Indicator */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 text-muted-foreground/60 dark:text-muted-foreground/40">
         <span className="text-[10px] font-mono tracking-[0.25em]">{t.hero.scroll}</span>
-        <ChevronDown size={14} className="animate-bounce" />
+        <ChevronDown size={14} className="animate-bounce motion-reduce:animate-none" />
       </div>
     </section>
   )

@@ -51,7 +51,7 @@ export default function Page() {
 
       {/* Side Dot Navigation — Desktop only */}
       <nav
-        className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col gap-3"
+        className="fixed left-4 sm:left-6 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col items-center gap-3 pl-2 py-3 rounded-full border border-border/50 bg-background/40 backdrop-blur-md shadow-sm shadow-black/5 dark:shadow-black/20"
         aria-label={t.common.sectionNav}
       >
         {SECTIONS.map((section) => (
@@ -59,27 +59,28 @@ export default function Page() {
             key={section}
             onClick={() => scrollToSection(section)}
             aria-label={t.common.jumpTo.replace("{0}", sectionLabels[section])}
-            className={`rounded-full transition-all duration-500 ${
+            title={sectionLabels[section]}
+            className={`rounded-full transition-all duration-500 ease-out ${
               activeSection === section
-                ? "w-1.5 h-8 bg-foreground"
-                : "w-1.5 h-3 bg-muted-foreground/25 hover:bg-muted-foreground/55 hover:h-5"
+                ? "w-1.5 h-9 bg-accent shadow-[0_0_12px_color-mix(in_oklch,var(--accent)_45%,transparent)]"
+                : "w-1.5 h-3 bg-muted-foreground/20 hover:bg-muted-foreground/50 hover:h-5"
             }`}
           />
         ))}
       </nav>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12">
         <Hero     sectionRef={setRef(0)} />
         <About    sectionRef={setRef(1)} />
         <Projects sectionRef={setRef(2)} />
         <Contact  sectionRef={setRef(3)} />
       </main>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12">
         <Footer />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background via-background/70 to-transparent dark:via-background/50 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent dark:via-background/55 pointer-events-none" />
 
     </div>
   )

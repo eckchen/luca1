@@ -125,11 +125,36 @@ export function Navbar({ activeSection }: Props) {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "border-b border-border/80 bg-background/85 backdrop-blur-xl"
+          ? "border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm shadow-black/[0.04] dark:shadow-black/25"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 min-h-16 flex items-center justify-between gap-3 pb-4 pt-[max(1rem,env(safe-area-inset-top,0px))]">
+      {/* Eigenes Feld oben — klar vom Rest des Headers getrennt */}
+      <div className="pt-[max(0.5rem,env(safe-area-inset-top,0px))] px-4 sm:px-6 lg:px-12">
+        <div className="max-w-6xl mx-auto py-2">
+          <div
+            className="relative overflow-hidden rounded-xl border border-accent/30 bg-card/70 dark:bg-card/50 backdrop-blur-md px-3 py-2.5 sm:px-5 sm:py-3 shadow-[inset_0_1px_0_0_color-mix(in_oklch,var(--foreground)_6%,transparent)]"
+            role="note"
+          >
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-accent/80 via-accent/40 to-accent/80"
+              aria-hidden
+            />
+            <p className="pl-2 sm:pl-3 text-center font-logo text-[13px] sm:text-[15px] font-medium leading-snug tracking-tight text-foreground">
+              <span className="text-accent not-italic">»</span>
+              <span className="mx-1.5 sm:mx-2">{t.common.headerQuote}</span>
+              <span className="text-accent not-italic">«</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="h-px max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 bg-gradient-to-r from-transparent via-border to-transparent opacity-80"
+        aria-hidden
+      />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 min-h-14 flex items-center justify-between gap-3 pb-3 pt-3">
         {/* Logo */}
         <button
           onClick={() => scrollTo("#hero")}
@@ -152,7 +177,7 @@ export function Navbar({ activeSection }: Props) {
             >
               {link.label}
               <span
-                className={`absolute -bottom-0.5 left-0 h-px bg-foreground transition-all duration-300 ${
+                className={`absolute -bottom-0.5 left-0 h-[2px] rounded-full bg-accent transition-all duration-300 ${
                   activeSection === link.href.slice(1) ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
@@ -169,7 +194,7 @@ export function Navbar({ activeSection }: Props) {
           <button
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={t.common.menu}
-            className="md:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-border hover:border-muted-foreground/50 text-muted-foreground hover:text-foreground active:scale-[0.98] transition-all duration-300"
+            className="md:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-border/90 bg-background/40 backdrop-blur-sm hover:border-accent/30 text-muted-foreground hover:text-foreground active:scale-[0.98] transition-all duration-300"
           >
             {mobileOpen ? <X size={15} /> : <Menu size={15} />}
           </button>
@@ -182,7 +207,7 @@ export function Navbar({ activeSection }: Props) {
           mobileOpen ? "max-h-48 border-b border-border" : "max-h-0"
         } bg-background/95 backdrop-blur-xl`}
       >
-        <nav className="max-w-5xl mx-auto px-6 py-5 flex flex-col gap-1">
+        <nav className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
           {navLinks.map((link) => (
             <button
               key={link.href}

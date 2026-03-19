@@ -13,13 +13,13 @@ export function Footer() {
   useEffect(() => setMounted(true), [])
 
   return (
-    <footer className="border-t border-border py-12 sm:py-16">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        <div className="space-y-1.5">
-          <div className="text-sm text-muted-foreground">
+    <footer className="border-t border-border/70 py-14 sm:py-20 mt-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+        <div className="space-y-2">
+          <div className="text-sm text-muted-foreground tracking-tight">
             © {new Date().getFullYear()} Luca. {t.footer.rights}
           </div>
-          <div className="text-xs text-muted-foreground/50 font-mono">
+          <div className="text-[11px] text-muted-foreground/45 font-mono tracking-wide">
             {t.footer.built}
           </div>
         </div>

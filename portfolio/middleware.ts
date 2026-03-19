@@ -43,6 +43,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next()
 }
 
+/* Nur API: kein Redis-Roundtrip auf jeder statischen Seite */
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/api/contact"],
 }

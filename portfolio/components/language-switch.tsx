@@ -33,7 +33,7 @@ export function LanguageSwitch() {
         aria-label={t.common.languageSwitch}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="flex items-center gap-2 px-3 py-2.5 min-h-[44px] rounded-lg border border-border hover:border-muted-foreground/50 active:scale-[0.98] text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+        className="flex items-center gap-2 px-3 py-2.5 min-h-[44px] rounded-xl border border-border/90 bg-background/50 backdrop-blur-sm hover:border-accent/30 active:scale-[0.98] text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
       >
         <span className="text-base">{current.flag}</span>
         <span className="hidden sm:inline">{t.language}</span>
@@ -43,7 +43,7 @@ export function LanguageSwitch() {
       {open && (
         <ul
           role="listbox"
-          className="absolute top-full right-0 mt-2 py-1 min-w-[160px] rounded-lg border border-border bg-background shadow-xl z-50"
+          className="absolute top-full right-0 mt-2 py-1 min-w-[160px] rounded-xl border border-border/90 bg-background/95 backdrop-blur-xl shadow-lg shadow-black/10 dark:shadow-black/40 z-50"
         >
           {LANGUAGES.map(({ code, label, flag }) => (
             <li key={code} role="option" aria-selected={lang === code}>

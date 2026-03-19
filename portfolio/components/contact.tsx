@@ -22,7 +22,7 @@ const SOCIAL_LINKS = [
 ]
 
 const INPUT_CLASSES =
-  "w-full px-4 py-3 bg-transparent border border-border rounded-lg text-base sm:text-sm text-foreground placeholder:text-muted-foreground/60 dark:placeholder:text-muted-foreground/40 focus:outline-none focus:border-muted-foreground/60 transition-colors duration-300"
+  "w-full px-4 py-3 bg-background/40 border border-border/90 rounded-xl text-base sm:text-sm text-foreground placeholder:text-muted-foreground/60 dark:placeholder:text-muted-foreground/40 focus:outline-none focus:border-accent/40 focus:ring-2 focus:ring-accent/15 transition-all duration-300"
 
 const LABEL_CLASSES =
   "block text-xs font-mono tracking-[0.18em] text-muted-foreground uppercase mb-2"
@@ -92,19 +92,23 @@ export function Contact({ sectionRef }: Props) {
     >
       <div className="space-y-16">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <div className="space-y-2 min-w-0">
-            <h2 className="text-2xl sm:text-4xl font-light">{t.contact.title}</h2>
-            <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="space-y-3 min-w-0">
+            <span className="block h-px w-10 bg-gradient-to-r from-accent/70 to-transparent" aria-hidden />
+            <h2 className="section-heading">{t.contact.title}</h2>
+            <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
               {t.contact.subtitle}
             </p>
           </div>
-          <span className="text-sm font-mono text-muted-foreground hidden sm:block shrink-0">03</span>
+          <span className="section-index hidden sm:block shrink-0">03</span>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5 surface-panel p-6 sm:p-8"
+          >
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className={LABEL_CLASSES}>
@@ -157,7 +161,7 @@ export function Contact({ sectionRef }: Props) {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="group flex items-center justify-center gap-2.5 px-6 py-3 min-h-[48px] bg-foreground text-background text-sm font-medium rounded-lg hover:opacity-80 disabled:opacity-60 active:scale-[0.98] transition-all duration-300"
+              className="group btn-primary-solid disabled:opacity-60 disabled:active:scale-100"
             >
               {status === "sending" ? (
                 <span className="flex items-center gap-2">
@@ -232,7 +236,7 @@ export function Contact({ sectionRef }: Props) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between p-4 border border-border rounded-xl hover:border-muted-foreground/45 transition-all duration-300 hover:shadow-sm"
+                    className="group flex items-center justify-between p-4 rounded-xl border border-border/80 bg-card/30 hover:border-accent/25 hover:bg-muted/15 transition-all duration-300 hover:shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       <Icon size={16} className="text-muted-foreground" />

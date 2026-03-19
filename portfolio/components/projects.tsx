@@ -20,18 +20,19 @@ export function Projects({ sectionRef }: Props) {
     >
       <div className="space-y-16">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <div className="space-y-2 min-w-0">
-            <h2 className="text-2xl sm:text-4xl font-light">{t.projects.title}</h2>
-            <p className="text-sm text-muted-foreground max-w-sm">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="space-y-3 min-w-0">
+            <span className="block h-px w-10 bg-gradient-to-r from-accent/70 to-transparent" aria-hidden />
+            <h2 className="section-heading">{t.projects.title}</h2>
+            <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
               {t.projects.subtitle}
             </p>
           </div>
-          <span className="text-sm font-mono text-muted-foreground hidden sm:block shrink-0">02</span>
+          <span className="section-index hidden sm:block shrink-0">02</span>
         </div>
 
         {/* Security Checker Project */}
-        <article className="group flex flex-col border border-border rounded-xl overflow-hidden hover:border-muted-foreground/35 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/[0.04] bg-card">
+        <article className="group flex flex-col rounded-2xl overflow-hidden border border-border/80 bg-card/60 backdrop-blur-[2px] shadow-sm shadow-black/[0.03] dark:shadow-black/20 transition-all duration-500 hover:border-accent/20 hover:shadow-lg hover:shadow-foreground/[0.06]">
           {/* Visual Header */}
           <div className="relative h-32 sm:h-40 bg-gradient-to-br from-emerald-500/20 via-teal-500/12 to-transparent dark:from-emerald-500/15 dark:via-teal-500/10 overflow-hidden">
             <CodingAnimation />
@@ -44,7 +45,7 @@ export function Projects({ sectionRef }: Props) {
               </div>
             </div>
             <div className="absolute top-4 right-4 flex items-center gap-2 px-2.5 py-1 rounded-md bg-background/80 dark:bg-background/60 border border-border backdrop-blur-sm">
-              <Loader2 size={12} className="animate-spin text-muted-foreground" />
+              <Loader2 size={12} className="animate-spin text-muted-foreground motion-reduce:animate-none motion-reduce:opacity-60" />
               <span className="text-[10px] font-mono text-muted-foreground">{t.projects.inProgress}</span>
             </div>
             <div
@@ -100,7 +101,7 @@ export function Projects({ sectionRef }: Props) {
         </article>
 
         {/* Automatenshop App */}
-        <article className="group flex flex-col border border-border rounded-xl overflow-hidden hover:border-muted-foreground/35 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/[0.04] bg-card">
+        <article className="group flex flex-col rounded-2xl overflow-hidden border border-border/80 bg-card/60 backdrop-blur-[2px] shadow-sm shadow-black/[0.03] dark:shadow-black/20 transition-all duration-500 hover:border-accent/20 hover:shadow-lg hover:shadow-foreground/[0.06]">
           <div className="relative h-32 sm:h-40 bg-gradient-to-br from-sky-400/20 via-sky-300/12 to-transparent dark:from-sky-400/15 dark:via-sky-300/10 overflow-hidden">
             <VendingMachineVisual />
             <div className="absolute bottom-3 right-3 flex items-center gap-2 pointer-events-none opacity-90">

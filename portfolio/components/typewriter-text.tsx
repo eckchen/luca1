@@ -41,6 +41,16 @@ export function TypewriterText({
     setDisplayed("")
     setDone(false)
 
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setDisplayed(text)
+      setDone(true)
+      onCompleteRef.current?.()
+      return
+    }
+
     let timeout: ReturnType<typeof setTimeout>
 
     const typeNext = () => {
