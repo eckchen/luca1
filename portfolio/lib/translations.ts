@@ -77,8 +77,13 @@ export const translations = {
       thanks: "Message received. Ich melde mich schnellstmöglich.",
       banned: "Deine Nachricht verstößt gegen unsere Richtlinien. Der Zugriff wurde gesperrt. Die Seite wird neu geladen.",
       error: "Beim Senden ist ein Fehler aufgetreten. Bitte versuche es später erneut.",
+      errorNetwork: "Netzwerkfehler — bitte Verbindung prüfen.",
+      errorFormNotFound:
+        "Formular-ID unbekannt (404). Trage die echte ID aus formspree.io in public/formspree.json ein (kein Platzhalter wie XXXX).",
+      errorFormspreeNotSetup:
+        "Formspree: Formular noch nicht fertig eingerichtet. Im Dashboard auf formspree.io das Formular öffnen, Empfänger-E-Mail bestätigen (Link in der E-Mail von Formspree) und warten, bis das Formular „aktiv“ ist — danach erneut testen.",
       notConfigured:
-        "Kontaktformular ist nicht konfiguriert. Lege NEXT_PUBLIC_FORMSPREE_ID in .env.local an und baue das Projekt neu.",
+        "Kontaktformular ist nicht konfiguriert. Trage deine Formspree-ID in public/formspree.json (formId) ein und deploye erneut — oder setze NEXT_PUBLIC_FORMSPREE_ID beim lokalen Build in .env.local.",
       validationName: "Bitte gib einen Namen mit mindestens 2 Zeichen ein.",
       validationEmail: "Bitte gib eine gültige E-Mail-Adresse ein.",
       validationMessage: "Die Nachricht sollte mindestens 10 Zeichen haben.",
@@ -165,8 +170,13 @@ export const translations = {
       thanks: "Message received. I'll get back to you ASAP.",
       banned: "Your message violates our guidelines. Access has been blocked. The page will reload.",
       error: "Something went wrong while sending. Please try again later.",
+      errorNetwork: "Network error — check your connection.",
+      errorFormNotFound:
+        "Unknown form ID (404). Put your real Formspree ID in public/formspree.json (not a placeholder like XXXX).",
+      errorFormspreeNotSetup:
+        "Formspree: This form isn’t fully set up yet. Open the form on formspree.io, confirm the recipient email (link in Formspree’s email), and wait until the form is active — then try again.",
       notConfigured:
-        "Contact form is not configured. Add NEXT_PUBLIC_FORMSPREE_ID to .env.local and rebuild.",
+        "Contact form is not configured. Add your Formspree form ID to public/formspree.json (formId) and redeploy — or set NEXT_PUBLIC_FORMSPREE_ID in .env.local when building locally.",
       validationName: "Please enter a name with at least 2 characters.",
       validationEmail: "Please enter a valid email address.",
       validationMessage: "Your message should be at least 10 characters.",
@@ -253,8 +263,13 @@ export const translations = {
       thanks: "Message ontvangen. Ik reageer zo snel mogelijk.",
       banned: "Je bericht overtreedt onze richtlijnen. De toegang is geblokkeerd. De pagina wordt opnieuw geladen.",
       error: "Er ging iets mis bij het versturen. Probeer het later opnieuw.",
+      errorNetwork: "Netwerkfout — controleer je verbinding.",
+      errorFormNotFound:
+        "Onbekende formulier-ID (404). Zet je echte Formspree-ID in public/formspree.json (geen placeholder zoals XXXX).",
+      errorFormspreeNotSetup:
+        "Formspree: formulier nog niet klaar. Open het formulier op formspree.io, bevestig het ontvanger-e-mailadres (link in de mail van Formspree) en wacht tot het formulier actief is — probeer daarna opnieuw.",
       notConfigured:
-        "Contactformulier is niet geconfigureerd. Zet NEXT_PUBLIC_FORMSPREE_ID in .env.local en bouw opnieuw.",
+        "Contactformulier is niet geconfigureerd. Zet je Formspree-ID in public/formspree.json (formId) en deploy opnieuw — of zet NEXT_PUBLIC_FORMSPREE_ID in .env.local bij een lokale build.",
       validationName: "Vul een naam in met minimaal 2 tekens.",
       validationEmail: "Vul een geldig e-mailadres in.",
       validationMessage: "Je bericht moet minimaal 10 tekens bevatten.",

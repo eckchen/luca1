@@ -122,6 +122,8 @@ Für GitHub Pages wird **Formspree** direkt vom Browser genutzt (kein eigener Se
 
 **Ohne Form-ID** (weder Env noch Fallback) bleibt das Formular deaktiviert; es erscheint ein Hinweis zur Konfiguration.
 
+**GitHub Pages:** `.env.local` liegt nicht im Repo — der Build auf GitHub kennt deine Variable nicht. Am einfachsten: **`portfolio/public/formspree.json`** im Repo bearbeiten, `formId` auf deine Formspree-ID setzen (z. B. `"xyzabc"`), dann statisch bauen und deployen. Die Seite lädt diese Datei zur Laufzeit; so funktioniert es auch ohne erneutes Setzen von Umgebungsvariablen auf dem Server.
+
 ### Optional: reCAPTCHA v3
 
 1. In [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin) eine v3-Site für deine Domain (z.B. `lucarue.vip`) anlegen.

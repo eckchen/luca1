@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Script from "next/script"
 import { Send, Github, Instagram, Mail, ArrowUpRight } from "lucide-react"
 import { useLanguage } from "@/components/language-provider"
@@ -32,7 +32,6 @@ const LABEL_CLASSES =
 const EMAIL_RE =
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const formspreeId = getFormspreeFormId()
 const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
 
 async function getRecaptchaToken(siteKey: string): Promise<string | undefined> {
@@ -51,11 +50,36 @@ type Grecaptcha = {
 
 export function Contact({ sectionRef }: Props) {
   const { t } = useLanguage()
+  const [formspreeId, setFormspreeId] = useState<string>(() => getFormspreeFormId())
+  const [configResolved, setConfigResolved] = useState(() => Boolean(getFormspreeFormId()))
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" })
   const [honeypot, setHoneypot] = useState("")
   const [status, setStatus] = useState<SubmitStatus>("idle")
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
+  const [formspreeErrorDetail, setFormspreeErrorDetail] = useState<string | null>(null)
+  const [formspreeErrorStandalone, setFormspreeErrorStandalone] = useState(false)
+
+  useEffect(() => {
+    if (formspreeId) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch("/formspree.json", { cache: "no-store" })
+        if (!res.ok) return
+        const data = (await res.json()) as { formId?: string }
+        const id = typeof data.formId === "string" ? data.formId.trim() : ""
+        if (!cancelled && id) setFormspreeId(id)
+      } catch {
+        /* offline or missing file */
+      } finally {
+        if (!cancelled) setConfigResolved(true)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [formspreeId])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -88,6 +112,8 @@ export function Contact({ sectionRef }: Props) {
     if (!validate()) return
 
     setStatus("sending")
+    setFormspreeErrorDetail(null)
+    setFormspreeErrorStandalone(false)
 
     let recaptchaToken: string | undefined
     if (recaptchaSiteKey && recaptchaLoaded) {
@@ -101,24 +127,28 @@ export function Contact({ sectionRef }: Props) {
     }
 
     try {
-      const payload: Record<string, string> = {
-        name: form.name.trim(),
-        email: form.email.trim(),
-        message: form.message.trim(),
-        _replyto: form.email.trim(),
-        _gotcha: honeypot,
-      }
-      if (recaptchaToken) {
-        payload["g-recaptcha-response"] = recaptchaToken
-      }
+      const body = new URLSearchParams()
+      body.set("name", form.name.trim())
+      body.set("email", form.email.trim())
+      body.set("message", form.message.trim())
+      body.set("_replyto", form.email.trim())
+      body.set("_subject", `Kontakt: ${form.name.trim()}`)
+      if (honeypot.trim()) body.set("_gotcha", honeypot)
+      if (recaptchaToken) body.set("g-recaptcha-response", recaptchaToken)
 
-      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
+      const res = await fetch(`https://formspree.io/f/${encodeURIComponent(formspreeId)}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body.toString(),
       })
 
-      await res.json().catch(() => ({ error: "unknown" }))
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string
+        errors?: Record<string, unknown>
+      }
 
       if (res.ok) {
         setStatus("sent")
@@ -128,16 +158,47 @@ export function Contact({ sectionRef }: Props) {
         setStatus("banned")
         setTimeout(() => window.location.reload(), 3000)
       } else {
+        let hint: string | null = typeof data.error === "string" && data.error ? data.error : null
+        if (!hint && data.errors) {
+          for (const v of Object.values(data.errors)) {
+            if (Array.isArray(v) && v[0] && typeof v[0] === "string") {
+              hint = v[0]
+              break
+            }
+          }
+        }
+        const hintBeforeNotFound = hint
+        if (!hint && res.status === 404) {
+          hint = t.contact.errorFormNotFound
+        }
+        let standalone = false
+        if (
+          hintBeforeNotFound &&
+          /isn'?t set up yet|not set up yet|form isn'?t set up/i.test(hintBeforeNotFound)
+        ) {
+          hint = t.contact.errorFormspreeNotSetup
+          standalone = true
+        }
+        if (hint) {
+          setFormspreeErrorDetail(hint)
+          setFormspreeErrorStandalone(standalone)
+        }
+        if (process.env.NODE_ENV === "development") {
+          console.error("[Formspree]", res.status, data)
+        }
         setStatus("error")
-        setTimeout(() => setStatus("idle"), 5000)
+        setTimeout(() => setStatus("idle"), 8000)
       }
     } catch {
+      setFormspreeErrorDetail(t.contact.errorNetwork)
+      setFormspreeErrorStandalone(false)
       setStatus("error")
-      setTimeout(() => setStatus("idle"), 5000)
+      setTimeout(() => setStatus("idle"), 8000)
     }
   }
 
   const configured = Boolean(formspreeId)
+  const waitingForConfig = !configResolved && !formspreeId
   const recaptchaBlocking = Boolean(recaptchaSiteKey && !recaptchaLoaded)
 
   return (
@@ -174,7 +235,7 @@ export function Contact({ sectionRef }: Props) {
             className="relative space-y-5 surface-panel p-6 sm:p-8"
             noValidate
           >
-            {!configured && (
+            {configResolved && !formspreeId && (
               <p className="text-sm text-amber-600 dark:text-amber-400/90 leading-relaxed" role="status">
                 {t.contact.notConfigured}
               </p>
@@ -211,7 +272,7 @@ export function Contact({ sectionRef }: Props) {
                   onChange={handleChange}
                   placeholder={t.contact.placeholderName}
                   className={INPUT_CLASSES}
-                  disabled={!configured}
+                  disabled={!configured || waitingForConfig}
                 />
               </div>
               <div>
@@ -227,7 +288,7 @@ export function Contact({ sectionRef }: Props) {
                   onChange={handleChange}
                   placeholder={t.contact.placeholderEmail}
                   className={INPUT_CLASSES}
-                  disabled={!configured}
+                  disabled={!configured || waitingForConfig}
                 />
               </div>
             </div>
@@ -245,7 +306,7 @@ export function Contact({ sectionRef }: Props) {
                 onChange={handleChange}
                 placeholder={t.contact.placeholderMessage}
                 className={`${INPUT_CLASSES} resize-none`}
-                disabled={!configured}
+                disabled={!configured || waitingForConfig}
               />
             </div>
 
@@ -257,7 +318,7 @@ export function Contact({ sectionRef }: Props) {
 
             <button
               type="submit"
-              disabled={status === "sending" || !configured || recaptchaBlocking}
+              disabled={status === "sending" || !configured || waitingForConfig || recaptchaBlocking}
               className="group btn-primary-solid disabled:opacity-60 disabled:active:scale-100"
             >
               {status === "sending" ? (
@@ -292,7 +353,16 @@ export function Contact({ sectionRef }: Props) {
             )}
             {status === "error" && (
               <p className="text-sm text-red-500/80" role="alert">
-                {t.contact.error}
+                {formspreeErrorStandalone && formspreeErrorDetail ? (
+                  formspreeErrorDetail
+                ) : (
+                  <>
+                    {t.contact.error}
+                    {formspreeErrorDetail ? (
+                      <span className="block mt-1 text-red-500/70">{formspreeErrorDetail}</span>
+                    ) : null}
+                  </>
+                )}
               </p>
             )}
           </form>
