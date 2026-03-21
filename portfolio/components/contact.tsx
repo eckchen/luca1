@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Script from "next/script"
 import { Send, Github, Instagram, Mail, ArrowUpRight } from "lucide-react"
 import { useLanguage } from "@/components/language-provider"
+import { getFormspreeFormId } from "@/lib/site-config"
 
 type Props = {
   sectionRef: (el: HTMLElement | null) => void
@@ -17,7 +19,7 @@ type FormState = {
 type SubmitStatus = "idle" | "sending" | "sent" | "error" | "banned"
 
 const SOCIAL_LINKS = [
-  { name: "GitHub",     handle: "@eckchen",  url: "https://github.com/eckchen", Icon: Github },
+  { name: "GitHub", handle: "@eckchen", url: "https://github.com/eckchen", Icon: Github },
   { name: "Instagram", handle: "@lucaa_rue", url: "https://www.instagram.com/lucaa_rue", Icon: Instagram },
 ]
 
@@ -27,45 +29,96 @@ const INPUT_CLASSES =
 const LABEL_CLASSES =
   "block text-xs font-mono tracking-[0.18em] text-muted-foreground uppercase mb-2"
 
+const EMAIL_RE =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const formspreeId = getFormspreeFormId()
+const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
+async function getRecaptchaToken(siteKey: string): Promise<string | undefined> {
+  const g = typeof window !== "undefined" ? (window as unknown as { grecaptcha?: Grecaptcha }).grecaptcha : undefined
+  if (!g) return undefined
+  await new Promise<void>((resolve) => {
+    g.ready(() => resolve())
+  })
+  return g.execute(siteKey, { action: "contact" })
+}
+
+type Grecaptcha = {
+  ready: (cb: () => void) => void
+  execute: (siteKey: string, opts: { action: string }) => Promise<string>
+}
+
 export function Contact({ sectionRef }: Props) {
   const { t } = useLanguage()
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" })
+  const [honeypot, setHoneypot] = useState("")
   const [status, setStatus] = useState<SubmitStatus>("idle")
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
+  const validate = (): boolean => {
+    const name = form.name.trim()
+    const email = form.email.trim()
+    const message = form.message.trim()
+    if (name.length < 2) {
+      setValidationError(t.contact.validationName)
+      return false
+    }
+    if (!EMAIL_RE.test(email)) {
+      setValidationError(t.contact.validationEmail)
+      return false
+    }
+    if (message.length < 10) {
+      setValidationError(t.contact.validationMessage)
+      return false
+    }
+    setValidationError(null)
+    return true
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formspreeId) return
+    if (honeypot.trim() !== "") return
+    if (!validate()) return
+
     setStatus("sending")
 
-    const formId = process.env.NEXT_PUBLIC_FORMSPREE_ID
-
-    if (!formId) {
-      const subject = encodeURIComponent(`Kontakt von ${form.name}`)
-      const body = encodeURIComponent(
-        `Name: ${form.name}\nE-Mail: ${form.email}\n\nNachricht:\n${form.message}`,
-      )
-      window.location.href = `mailto:lucarue200@gmail.com?subject=${subject}&body=${body}`
-      setStatus("idle")
-      setForm({ name: "", email: "", message: "" })
-      return
+    let recaptchaToken: string | undefined
+    if (recaptchaSiteKey && recaptchaLoaded) {
+      try {
+        recaptchaToken = await getRecaptchaToken(recaptchaSiteKey)
+      } catch {
+        setStatus("error")
+        setTimeout(() => setStatus("idle"), 5000)
+        return
+      }
     }
 
     try {
-      const res = await fetch(`https://formspree.io/f/${formId}`, {
+      const payload: Record<string, string> = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        message: form.message.trim(),
+        _replyto: form.email.trim(),
+        _gotcha: honeypot,
+      }
+      if (recaptchaToken) {
+        payload["g-recaptcha-response"] = recaptchaToken
+      }
+
+      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          message: form.message,
-          _replyto: form.email,
-        }),
+        body: JSON.stringify(payload),
       })
 
-      const data = await res.json().catch(() => ({ error: "Unbekannter Fehler" }))
+      await res.json().catch(() => ({ error: "unknown" }))
 
       if (res.ok) {
         setStatus("sent")
@@ -84,12 +137,23 @@ export function Contact({ sectionRef }: Props) {
     }
   }
 
+  const configured = Boolean(formspreeId)
+  const recaptchaBlocking = Boolean(recaptchaSiteKey && !recaptchaLoaded)
+
   return (
     <section
       id="contact"
       ref={sectionRef}
       className="py-24 sm:py-32"
     >
+      {recaptchaSiteKey ? (
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
+          strategy="afterInteractive"
+          onLoad={() => setRecaptchaLoaded(true)}
+        />
+      ) : null}
+
       <div className="space-y-16">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -107,8 +171,32 @@ export function Contact({ sectionRef }: Props) {
           {/* Form */}
           <form
             onSubmit={handleSubmit}
-            className="space-y-5 surface-panel p-6 sm:p-8"
+            className="relative space-y-5 surface-panel p-6 sm:p-8"
+            noValidate
           >
+            {!configured && (
+              <p className="text-sm text-amber-600 dark:text-amber-400/90 leading-relaxed" role="status">
+                {t.contact.notConfigured}
+              </p>
+            )}
+
+            {/* Honeypot — für Bots; nicht ausfüllen */}
+            <div
+              className="absolute left-[-9999px] top-0 w-px h-px overflow-hidden"
+              aria-hidden="true"
+            >
+              <label htmlFor="contact-honeypot">Website</label>
+              <input
+                id="contact-honeypot"
+                name="_gotcha"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className={LABEL_CLASSES}>
@@ -123,6 +211,7 @@ export function Contact({ sectionRef }: Props) {
                   onChange={handleChange}
                   placeholder={t.contact.placeholderName}
                   className={INPUT_CLASSES}
+                  disabled={!configured}
                 />
               </div>
               <div>
@@ -138,6 +227,7 @@ export function Contact({ sectionRef }: Props) {
                   onChange={handleChange}
                   placeholder={t.contact.placeholderEmail}
                   className={INPUT_CLASSES}
+                  disabled={!configured}
                 />
               </div>
             </div>
@@ -155,12 +245,19 @@ export function Contact({ sectionRef }: Props) {
                 onChange={handleChange}
                 placeholder={t.contact.placeholderMessage}
                 className={`${INPUT_CLASSES} resize-none`}
+                disabled={!configured}
               />
             </div>
 
+            {validationError && (
+              <p className="text-sm text-red-500/90" role="alert">
+                {validationError}
+              </p>
+            )}
+
             <button
               type="submit"
-              disabled={status === "sending"}
+              disabled={status === "sending" || !configured || recaptchaBlocking}
               className="group btn-primary-solid disabled:opacity-60 disabled:active:scale-100"
             >
               {status === "sending" ? (
@@ -184,47 +281,36 @@ export function Contact({ sectionRef }: Props) {
             </button>
 
             {status === "sent" && (
-              <p className="text-sm text-green-500/80">
+              <p className="text-sm text-green-500/80" role="status">
                 {t.contact.thanks}
               </p>
             )}
             {status === "banned" && (
-              <p className="text-sm text-red-500/80">
+              <p className="text-sm text-red-500/80" role="alert">
                 {t.contact.banned}
               </p>
             )}
             {status === "error" && (
-              <p className="text-sm text-red-500/80">
-                {t.contact.error}{" "}
-                <a href="mailto:lucarue200@gmail.com" className="underline hover:no-underline">
-                  lucarue200@gmail.com
-                </a>
-                .
+              <p className="text-sm text-red-500/80" role="alert">
+                {t.contact.error}
               </p>
             )}
           </form>
 
           {/* Contact Info */}
           <div className="space-y-10">
-            {/* Email */}
             <div className="space-y-4">
               <div className="text-xs font-mono tracking-[0.18em] text-muted-foreground uppercase">
                 {t.contact.direct}
               </div>
-              <a
-                href="mailto:lucarue200@gmail.com"
-                className="group inline-flex items-center gap-3 text-foreground hover:text-muted-foreground transition-colors duration-300 min-h-[44px] py-2"
-              >
-                <Mail size={18} className="text-muted-foreground shrink-0" />
-                <span className="text-base sm:text-lg break-all sm:break-normal">lucarue200@gmail.com</span>
-                <ArrowUpRight
-                  size={16}
-                  className="transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"
-                />
-              </a>
+              <div className="flex gap-3 items-start text-muted-foreground">
+                <Mail size={18} className="shrink-0 mt-0.5" aria-hidden />
+                <p className="text-base sm:text-lg leading-relaxed">
+                  {t.contact.directHint}
+                </p>
+              </div>
             </div>
 
-            {/* Social Links */}
             <div className="space-y-4">
               <div className="text-xs font-mono tracking-[0.18em] text-muted-foreground uppercase">
                 {t.contact.elsewhere}
