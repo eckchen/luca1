@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { containsBannedContent } from "@/lib/banned-words"
 import { banIp, isIpBanned } from "@/lib/redis"
+import { FORMSPREE_FORM_ID_FALLBACK } from "@/lib/site-config"
 
 function getClientIp(req: NextRequest): string {
   // Cloudflare
@@ -47,8 +48,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Weiterleitung an Formspree
-  const formId = process.env.NEXT_PUBLIC_FORMSPREE_ID
+  // Weiterleitung an Formspree (nur Server-Env; kein Secret)
+  const formId =
+    process.env.FORMSPREE_FORM_ID?.trim() ||
+    process.env.NEXT_PUBLIC_FORMSPREE_ID?.trim() ||
+    FORMSPREE_FORM_ID_FALLBACK.trim()
   if (!formId) {
     return NextResponse.json(
       { error: "Kontaktformular ist nicht konfiguriert." },

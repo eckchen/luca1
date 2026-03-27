@@ -65,10 +65,30 @@ export function Contact({ sectionRef }: Props) {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch("/formspree.json", { cache: "no-store" })
-        if (!res.ok) return
-        const data = (await res.json()) as { formId?: string }
-        const id = typeof data.formId === "string" ? data.formId.trim() : ""
+        const urls =
+          typeof window !== "undefined"
+            ? [
+                new URL("formspree.json", window.location.href).href,
+                `${window.location.origin}/formspree.json`,
+              ]
+            : ["/formspree.json"]
+        const tried = new Set<string>()
+        let data: { formId?: string } | null = null
+        for (const url of urls) {
+          if (tried.has(url)) continue
+          tried.add(url)
+          try {
+            const res = await fetch(url, { cache: "no-store" })
+            if (res.ok) {
+              data = (await res.json()) as { formId?: string }
+              break
+            }
+          } catch {
+            continue
+          }
+        }
+        const id =
+          data && typeof data.formId === "string" ? data.formId.trim() : ""
         if (!cancelled && id) setFormspreeId(id)
       } catch {
         /* offline or missing file */

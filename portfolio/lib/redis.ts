@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis"
 
-/** Redis-Client für gebannte IPs. Funktioniert mit Upstash (Edge/Serverless). */
+/** Redis nur für Server/Middleware/API. UPSTASH_* niemals als NEXT_PUBLIC_ setzen. */
 export const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({

@@ -29,16 +29,18 @@ npm run dev
 
 ## Environment Variables
 
-Kopiere `.env.example` nach `.env.local` und fülle die Werte aus:
+Kopiere `.env.example` nach `.env.local` und fülle die Werte aus (`.env*` ist **gitignored** – nicht committen).
 
 | Variable | Beschreibung |
 |----------|--------------|
-| `NEXT_PUBLIC_FORMSPREE_ID` | Formspree Form-ID für das Kontaktformular |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (für IP-Bann) |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis Token |
+| `NEXT_PUBLIC_FORMSPREE_ID` | Formspree Form-ID (wird **öffentlich** ins Client-Bundle gebaut) |
+| `FORMSPREE_FORM_ID` | Optional: gleiche ID nur für **Server/API** (nicht im Browser-Build) |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional: reCAPTCHA **Site Key** (öffentlich; Secret nur bei Google/Formspree) |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (nur Server / Middleware / API) |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Token (nur Server — **nie** `NEXT_PUBLIC_`) |
 
-Ohne Formspree: Das Formular nutzt automatisch einen `mailto:`-Fallback.  
-Ohne Upstash: IP-Bann bei Hassrede ist deaktiviert.
+**Sicherheit:** `NEXT_PUBLIC_*` niemals für echte Geheimnisse (DB-Passwörter, API-Secrets, Redis-Token) verwenden.  
+Ohne Upstash: IP-Bann (Vercel) ist deaktiviert. **GitHub Pages** (statischer Export): keine API-Route, kein Redis/Middleware – Secrets dort nicht relevant.
 
 ## Tech Stack
 
